@@ -28,7 +28,7 @@ public class Beitrag implements Parcelable
         this.username = username;
         this.userID = userID;
     }
-    public Beitrag(){ // wird benötigt
+    public Beitrag(){ // wird benötigt.
 
     }
 
