@@ -68,6 +68,10 @@ public class Beitrag implements Parcelable
 
     public int getLikes() { return likes;}
 
+    public void setLikes(int likes) {
+        this.likes = likes;
+    }
+
     @Override
     public int describeContents() {
         return 0;

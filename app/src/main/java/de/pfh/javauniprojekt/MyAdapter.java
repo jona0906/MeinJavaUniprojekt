@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -28,6 +29,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.logging.Handler;
 
 public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
 
@@ -47,6 +49,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(
                 0, ItemTouchHelper.RIGHT) {
 
+
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
                 return false;
@@ -55,50 +58,58 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 int position = viewHolder.getBindingAdapterPosition();
+                Beitrag swipedItem = items.get(position);
 
-
-                Log.d("MyAdapter", "onSwiped: "+ items.get(position).getContent() + "   " + items.size());
-
-
-                Java.addLike(position, items.get(position).getUserID(), items.get(position).getDate());
-
-
-                restoreItem(viewHolder.itemView, position);
+                // Hier wird die Anzahl der "Likes" erhöht (oder Ihre gewünschte Aktion durchgeführt)
+                Java.addLike(position, swipedItem.getUserID(), swipedItem.getDate())
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void unused) {
+                                swipedItem.setLikes(swipedItem.getLikes() * -1);
+                                items.set(position, swipedItem);  // Aktualisieren Sie die Datenquelle mit dem gleichen Element
+                                notifyItemChanged(position);
+                            }
+                        });
             }
         }).attachToRecyclerView(recyclerView);
     }
 
-    private void restoreItem (View view,int position){
+    /*
+    private void restoreItem(View view, int position) {
         // Animation, damit das Element zurückkommt.
         view.animate()
-                .translationX(0)
+                .translationX(0) // Zurücksetzen auf 0 (keine Verschiebung)
                 .setDuration(200)
                 .setInterpolator(new DecelerateInterpolator())
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
-
-                        /*
-                        Task<List<Beitrag>> loadDataTask = Java.load(recyclerView, MyAdapter.this, activity);
-
-                        loadDataTask.addOnCompleteListener(new OnCompleteListener<List<Beitrag>>() {
-                            @Override
-                            public void onComplete(Task<List<Beitrag>> task) {
-                                if (task.isSuccessful()) {
-                                    items = task.getResult();
-                                }
-                            }
-                        });
-
-                         */
-                        /*
-                        Frage: Wie bekomme ich es hin, dass 1. das Element nach dem wischen nicht ausgeblendet wird und 2., dass
-                        das Feld mit Recycler View entweder aktualisiert wird, oder sich einfach nur die Zahl "Likes" um einen
-                        erhöht?
-                         */
+                        // Aktionen, die nach der Animation ausgeführt werden sollen
+                        // z.B. Aktualisierung der Ansicht
                     }
                 });
     }
+
+
+    private void restoreItem(View view, int position) {
+        // Animation, damit das Element zurückkommt.
+        view.animate()
+                .translationX(0) // Zurücksetzen auf 0 (keine Verschiebung)
+                .setDuration(200)
+                .setInterpolator(new DecelerateInterpolator())
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        // Aktualisierung der Datenquelle und Benachrichtigung des Adapters
+                        items.add(position, items.get(position));  // Aktualisieren Sie die Datenquelle mit dem gleichen Element
+                        notifyDataSetChanged();  // Benachrichtigen Sie den Adapter über die Änderung
+                    }
+                });
+    }
+
+
+     */
+
 
 
     public void setFilteredList(List<Beitrag> filteredList)
@@ -125,10 +136,26 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
 
         Java.isLikeVorhanden(items.get(position).getUserID(), items.get(position).getDate()).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                if (task.getResult()) {
-                    holder.likes.setText(items.get(position).getLikes() + " ♥");
-                } else {
-                    holder.likes.setText(items.get(position).getLikes() + " \uD83D\uDDA4");
+                if (items.get(position).getLikes() >=0) {
+                    if (task.getResult()) {
+                        if(items.get(position).getLikes() == 0)
+                        {
+                            holder.likes.setText(1 + " ♥");
+                        }
+                        else{
+                            holder.likes.setText(items.get(position).getLikes() + " ♥");
+                        }
+                    } else {
+                        holder.likes.setText(items.get(position).getLikes() + " \uD83D\uDDA4");
+                    }
+                }
+                else
+                {
+                    if (task.getResult()) {
+                        holder.likes.setText(((items.get(position).getLikes() * -1 )+ 1) + " ♥");
+                    } else {
+                        holder.likes.setText(((items.get(position).getLikes() * -1)-1) + " \uD83D\uDDA4");
+                    }
                 }
             }
         });

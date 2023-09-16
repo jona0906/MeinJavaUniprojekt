@@ -283,7 +283,8 @@ public class Java {
         return taskCompletionSource.getTask();
     }
 
-    public static void addLike(int position, String aUserID, Date aDate) {
+    public static Task<Void> addLike(int position, String aUserID, Date aDate) {
+        TaskCompletionSource<Void> taskCompletionSource = new TaskCompletionSource<>();
         String userID;
         Date date;
         String myUserID = FirebaseAuth.getInstance().getUid();
@@ -312,11 +313,45 @@ public class Java {
                         if (task.isSuccessful()) {
                             QuerySnapshot querySnapshot = task.getResult();
                             if (querySnapshot != null && !querySnapshot.isEmpty()) {
+                                Log.d("Java", "Bin am löschen");
+                                Query query = collectionRef.whereEqualTo("userID", myUserID);
 
+                                query.get().addOnCompleteListener(task2 -> {
+                                    if (task2.isSuccessful()) {
+                                        QuerySnapshot querySnapshot2 = task2.getResult();
+                                        if (querySnapshot2 != null) {
+                                            for (QueryDocumentSnapshot document : querySnapshot2) {
+                                                DocumentReference documentReference = document.getReference();
+                                                documentReference.delete();
+
+
+                                                Map<String, Object> updates = new HashMap<>();
+                                                updates.put("likes", FieldValue.increment(-1)); // "Likes" um 1 erhöhen
+
+                                                // Führe die Aktualisierung aus
+                                                docRef.set(updates, SetOptions.merge()) // Merge-Option, um vorhandene Daten beizubehalten
+                                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                            @Override
+                                                            public void onSuccess(Void aVoid) {
+                                                                //Erfolgreich :)
+                                                                taskCompletionSource.setResult(null);
+                                                            }
+                                                        })
+                                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                            @Override
+                                                            public void onComplete(@NonNull Task<Void> task) {
+                                                                if (!task.isSuccessful()) {
+                                                                    //Fehler (Fehlermeldung hier irgendwo einbauen?)(Toast?)
+                                                                }
+                                                            }
+                                                        });
+                                            }
+                                        }
+                                    }
+                                });
                             } else {
                                 Map<String, Object> addUserID = new HashMap<>();
                                 addUserID.put("userID", myUserID);
-
 
                                 collectionRef.add(addUserID)
                                         .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
@@ -335,6 +370,7 @@ public class Java {
                                                                 @Override
                                                                 public void onSuccess(Void aVoid) {
                                                                     //Erfolgreich :)
+                                                                    taskCompletionSource.setResult(null);
                                                                 }
                                                             })
                                                             .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -345,19 +381,12 @@ public class Java {
                                                                     }
                                                                 }
                                                             });
-
-                                                } else {
-                                                    // Hier auch Fehler
-
                                                 }
                                             }
                                         });
 
 
                             }
-                        } else {
-                            // Fehler
-
                         }
                     }
                 });
@@ -372,7 +401,7 @@ public class Java {
             public void onError(Exception e) {
             }
         });
-
+        return taskCompletionSource.getTask();
     }
 
 
@@ -459,7 +488,6 @@ public class Java {
             public Task<List<Beitrag>> onPostFound(String aDocumentPath) {
                 documentPath[0] = aDocumentPath;
 
-                // Rest des Codes hier ausführen, nachdem documentPath[0] gesetzt wurde
                 FirebaseFirestore db = FirebaseFirestore.getInstance();
                 DocumentReference documentRef = db.document(documentPath[0]);
                 CollectionReference commentsCollectionRef = documentRef.collection("comments");
