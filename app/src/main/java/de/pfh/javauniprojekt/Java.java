@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -130,6 +131,58 @@ public class Java {
             }
         });
     }
+    public static void addComment(Activity activity, String newPost, String username, String uid, Date postDate, String postUserID){
+        Log.d("Java", "addComment: " + postUserID + "  " + postDate);
+        Java.findPostByDateAndUserID(postUserID, postDate, new Java.OnPostFoundListener() {
+            @Override
+            public Task<List<Beitrag>> onPostFound(String documentPath) {
+                String userId = FirebaseAuth.getInstance().getUid();
+                FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+                DocumentReference docRef = firestore.document(documentPath);
+                DocumentReference userDocRef = usersCollection.document(userId);
+                CollectionReference collectionRef = docRef.collection("comments");
+
+                Map<String, Object> postData = new HashMap<>();
+                postData.put("date", Calendar.getInstance().getTime());
+                postData.put("username", username);
+                postData.put("userID", uid);
+                postData.put("likes", 0);
+                postData.put("content", newPost);
+
+
+                collectionRef.add(postData)
+                        .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                            @Override
+                            public void onComplete(Task<DocumentReference> task) {
+                                if (task.isSuccessful()) {
+                                    Toast.makeText(activity, "Kommentar erfolgreich hinzugefügt", Toast.LENGTH_SHORT).show();
+
+                                    Map<String, Object> updates = new HashMap<>();
+                                    updates.put("hatKommentare", true);
+                                    docRef.update(updates)
+                                            .addOnSuccessListener(new OnSuccessListener() {
+                                                @Override
+                                                public void onSuccess(Object o) {
+                                                    Log.d("Firestore", "hatKommentare auf true gesetzt");
+                                                }
+                                            });
+                                }
+                            }
+                        });
+                return null;
+            }
+
+            @Override
+            public void onPostNotFound() {
+
+            }
+
+            @Override
+            public void onError(Exception e) {
+
+            }
+        });
+    }
 
     public static void addPost(Activity activity, String newPost, String username, String uid, boolean statement) {
         String userId = FirebaseAuth.getInstance().getUid();
@@ -184,6 +237,52 @@ public class Java {
                 });
     }
 
+    public static Task<Boolean> isLikeVorhanden(String userID, Date date){
+
+        final TaskCompletionSource<Boolean> taskCompletionSource = new TaskCompletionSource<>();
+        Java.findPostByDateAndUserID(userID, date, new Java.OnPostFoundListener() {
+            @Override
+            public Task<List<Beitrag>> onPostFound(String documentPath) {
+
+                FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+                DocumentReference docRef = firestore.document(documentPath);
+                String myUserID = FirebaseAuth.getInstance().getUid();
+                CollectionReference collectionRef = docRef.collection("likedUser");
+                Query query = collectionRef.whereEqualTo("userID", myUserID);
+
+                query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            QuerySnapshot querySnapshot = task.getResult();
+                            if (querySnapshot != null && !querySnapshot.isEmpty()) {
+                                taskCompletionSource.setResult(true);
+                            }
+                            else {
+                                taskCompletionSource.setResult(false);
+                            }
+                        }
+                        else {
+                            taskCompletionSource.setResult(false);
+                        }
+                    }
+                });
+                return null;
+            }
+
+                @Override
+                public void onPostNotFound() {
+
+                }
+
+                @Override
+                public void onError(Exception e) {
+
+                }
+            });
+        return taskCompletionSource.getTask();
+    }
+
     public static void addLike(int position, String aUserID, Date aDate) {
         String userID;
         Date date;
@@ -199,7 +298,7 @@ public class Java {
         Log.d("Java", "onPostFound: " + userID + " " + date);
         Java.findPostByDateAndUserID(userID, date, new Java.OnPostFoundListener() {
             @Override
-            public void onPostFound(String documentPath) {
+            public Task<List<Beitrag>> onPostFound(String documentPath) {
 
                 FirebaseFirestore firestore = FirebaseFirestore.getInstance();
                 DocumentReference docRef = firestore.document(documentPath);
@@ -262,6 +361,7 @@ public class Java {
                         }
                     }
                 });
+                return null;
             }
 
             @Override
@@ -344,11 +444,60 @@ public class Java {
     }
 
     public interface OnPostFoundListener {
-        void onPostFound(String documentPath);
+        Task<List<Beitrag>> onPostFound(String documentPath);
 
         void onPostNotFound();
 
         void onError(Exception e);
+    }
+
+    private static List<Beitrag> alleKommentare = new ArrayList<>();
+    public static Task<List<Beitrag>> ladeAlleKommentare(String userID, Date date, RecyclerView recyclerView, MyCommentAdapter myAdapter, Activity activity) {
+        final String[] documentPath = new String[1];
+        Java.findPostByDateAndUserID(userID, date, new Java.OnPostFoundListener() {
+            @Override
+            public Task<List<Beitrag>> onPostFound(String aDocumentPath) {
+                documentPath[0] = aDocumentPath;
+
+                // Rest des Codes hier ausführen, nachdem documentPath[0] gesetzt wurde
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                DocumentReference documentRef = db.document(documentPath[0]);
+                CollectionReference commentsCollectionRef = documentRef.collection("comments");
+
+                return commentsCollectionRef.get().continueWith(task -> {
+                    if (task.isSuccessful()) {
+                        for (DocumentSnapshot document : task.getResult()) {
+                            Beitrag beitrag = document.toObject(Beitrag.class);
+                            if (beitrag != null) {
+                                alleKommentare.add(beitrag);
+                            }
+                        }
+                        Java.sortByDate(alleKommentare);
+                        recyclerView.setLayoutManager(new LinearLayoutManager(activity));
+                        myAdapter.setItemList(alleKommentare);
+                        recyclerView.setAdapter(myAdapter);
+                        return alleKommentare;
+                    } else {
+                        throw task.getException();
+                    }
+                });
+            }
+
+            @Override
+            public void onPostNotFound() {
+                Log.d("TAG", "nicht gefunden");
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Log.d("TAG", "fehler");
+            }
+        });
+        return Tasks.forResult(new ArrayList<Beitrag>());
+    }
+
+    public static List<Beitrag> alleKommentare(){
+        return alleKommentare;
     }
 
 

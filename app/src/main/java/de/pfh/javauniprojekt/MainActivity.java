@@ -42,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewInter
     private String myUsername;
     private ImageButton followedPosts;
     private ImageButton allPosts;
+    private String userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewInter
         allPosts = findViewById(R.id.allPosts);
         searchView.clearFocus();
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        String userId = currentUser.getUid();
+        userId = currentUser.getUid();
         FirebaseFirestore.getInstance().collection("users").document(userId).get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
@@ -176,6 +177,9 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewInter
         Bundle bundle = new Bundle();
         bundle.putSerializable("Datum", beitraegeListe.get(position).getDate());
         intent.putExtra("Beitrag", beitrag);
+        intent.putExtra("Kommentar", false);
+        intent.putExtra("username", myUsername);
+        intent.putExtra("uid", userId);
         intent.putExtras(bundle);
         startActivity(intent);
     }

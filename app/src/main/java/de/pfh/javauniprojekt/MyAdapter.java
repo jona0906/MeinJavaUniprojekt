@@ -18,6 +18,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -115,7 +120,18 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
         holder.content.setText(items.get(position).getContent());
         holder.user.setText(items.get(position).getUsername());
         holder.date.setText(Java.dateCheck(date));
-        holder.likes.setText(items.get(position).getLikes() + " ♥");
+        //holder.likes.setText(items.get(position).getLikes() + " ♥");
+        //holder.likes.setText(items.get(position).getLikes() + " \uD83D\uDDA4");
+
+        Java.isLikeVorhanden(items.get(position).getUserID(), items.get(position).getDate()).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                if (task.getResult()) {
+                    holder.likes.setText(items.get(position).getLikes() + " ♥");
+                } else {
+                    holder.likes.setText(items.get(position).getLikes() + " \uD83D\uDDA4");
+                }
+            }
+        });
     }
 
     @Override

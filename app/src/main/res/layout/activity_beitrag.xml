@@ -31,11 +31,9 @@
 
     <ScrollView
         android:id="@+id/scrollView"
-        android:layout_width="349dp"
-        android:layout_height="565dp"
+        android:layout_width="345dp"
+        android:layout_height="300dp"
         android:layout_marginTop="34dp"
-        android:maxHeight="500dp"
-        android:minHeight="100dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -45,7 +43,7 @@
         <TextView
             android:id="@+id/content"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="0dp" />
 
     </ScrollView>
 
@@ -60,4 +58,41 @@
         app:layout_constraintBottom_toTopOf="@+id/scrollView"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/img" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewComment"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/kommentar"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <EditText
+        android:id="@+id/kommentar"
+        android:layout_width="291dp"
+        android:layout_height="42dp"
+        android:layout_marginTop="8dp"
+        android:ems="10"
+        android:hint="Kommentar hinzufügen"
+        android:maxLength="180"
+        android:inputType="textPersonName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.133"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/date" />
+
+    <Button
+        android:id="@+id/kommentarHinzufügen"
+        android:layout_width="77dp"
+        android:layout_height="38dp"
+        android:layout_marginStart="8dp"
+        android:text="Send"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.157"
+        app:layout_constraintStart_toEndOf="@+id/kommentar"
+        app:layout_constraintTop_toTopOf="@+id/kommentar" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
