@@ -136,25 +136,23 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
 
         Java.isLikeVorhanden(items.get(position).getUserID(), items.get(position).getDate()).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                if (items.get(position).getLikes() >=0) {
-                    if (task.getResult()) {
-                        if(items.get(position).getLikes() == 0)
-                        {
-                            holder.likes.setText(1 + " ♥");
-                        }
-                        else{
-                            holder.likes.setText(items.get(position).getLikes() + " ♥");
+                if(!items.isEmpty() && items.size() >= position) {
+                    if (items.get(position).getLikes() >= 0) {
+                        if (task.getResult()) {
+                            if (items.get(position).getLikes() == 0) {
+                                holder.likes.setText(1 + " ♥");
+                            } else {
+                                holder.likes.setText(items.get(position).getLikes() + " ♥");
+                            }
+                        } else {
+                            holder.likes.setText(items.get(position).getLikes() + " \uD83D\uDDA4");
                         }
                     } else {
-                        holder.likes.setText(items.get(position).getLikes() + " \uD83D\uDDA4");
-                    }
-                }
-                else
-                {
-                    if (task.getResult()) {
-                        holder.likes.setText(((items.get(position).getLikes() * -1 )+ 1) + " ♥");
-                    } else {
-                        holder.likes.setText(((items.get(position).getLikes() * -1)-1) + " \uD83D\uDDA4");
+                        if (task.getResult()) {
+                            holder.likes.setText(((items.get(position).getLikes() * -1) + 1) + " ♥");
+                        } else {
+                            holder.likes.setText(((items.get(position).getLikes() * -1) - 1) + " \uD83D\uDDA4");
+                        }
                     }
                 }
             }
