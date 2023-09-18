@@ -36,7 +36,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
     private final RecyclerViewInterface recyclerViewInterface;
     private RecyclerView recyclerView;
     private Context context;
-    private List<Beitrag> items;
+    private static List<Beitrag> items;
     private Activity activity;
 
 
@@ -136,7 +136,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
 
         Java.isLikeVorhanden(items.get(position).getUserID(), items.get(position).getDate()).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                if(!items.isEmpty() && items.size() >= position) {
+                if(!items.isEmpty() && items.size() > position) {
                     if (items.get(position).getLikes() >= 0) {
                         if (task.getResult()) {
                             if (items.get(position).getLikes() == 0) {
@@ -162,6 +162,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
     @Override
     public int getItemCount() {
         return items.size();
+    }
+
+    public static List<Beitrag> getItems() {
+        return items;
     }
 
     public void updateData() {

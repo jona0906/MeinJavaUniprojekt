@@ -8,8 +8,6 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -148,7 +146,7 @@ public class Java {
                 postData.put("userID", uid);
                 postData.put("likes", 0);
                 postData.put("content", newPost);
-
+                postData.put("gelöscht", false);
 
                 collectionRef.add(postData)
                         .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
@@ -156,16 +154,6 @@ public class Java {
                             public void onComplete(Task<DocumentReference> task) {
                                 if (task.isSuccessful()) {
                                     Toast.makeText(activity, "Kommentar erfolgreich hinzugefügt", Toast.LENGTH_SHORT).show();
-
-                                    Map<String, Object> updates = new HashMap<>();
-                                    updates.put("hatKommentare", true);
-                                    docRef.update(updates)
-                                            .addOnSuccessListener(new OnSuccessListener() {
-                                                @Override
-                                                public void onSuccess(Object o) {
-                                                    Log.d("Firestore", "hatKommentare auf true gesetzt");
-                                                }
-                                            });
                                 }
                             }
                         });
@@ -191,6 +179,7 @@ public class Java {
         postData.put("username", username);
         postData.put("userID", uid);
         postData.put("likes", 0);
+        postData.put("gelöscht", false);
         if (statement) {
             postData.put("content", newPost.replace("\n", " "));
         } else {
@@ -235,6 +224,35 @@ public class Java {
                         Toast.makeText(activity, "Fehler beim Hinzufügen des Beitrags: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    public static void deletePost(String userID, Date date, Activity activity){
+        findPostByDateAndUserID(userID, date, new OnPostFoundListener() {
+            @Override
+            public Task<List<Beitrag>> onPostFound(String documentPath) {
+                FirebaseFirestore firestore = FirebaseFirestore.getInstance();
+                DocumentReference docRef = firestore.document(documentPath);
+                Map<String, Object> updates = new HashMap<>();
+                updates.put("gelöscht", true);
+                docRef.update(updates).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Toast.makeText(activity, "Der Beitrag wurde erfolgreich gelöscht", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                return null;
+            }
+
+            @Override
+            public void onPostNotFound() {
+                Toast.makeText(activity, "Kommentare können leider noch nicht gelöscht werden...", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(Exception e) {
+
+            }
+        });
     }
 
     public static Task<Boolean> isLikeVorhanden(String userID, Date date){
@@ -417,7 +435,6 @@ public class Java {
             public void onComplete(Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
                     QuerySnapshot querySnapshot = task.getResult();
-                    Log.d("Java", "onComplete: " + task.getResult().getDocuments().get(0).getReference().getPath());
                     if (querySnapshot != null && !querySnapshot.isEmpty()) {
                         // Es wurde mindestens ein Beitrag gefunden
                         DocumentSnapshot document = querySnapshot.getDocuments().get(0);
@@ -465,12 +482,50 @@ public class Java {
                             showToast(activity, "Du kannst dir nicht selbst folgen.", Toast.LENGTH_SHORT);
                         }
                     } else {
-                        showToast(activity, "Du folgst " + username + " bereits.", Toast.LENGTH_SHORT);
+                        // Benutzer folgt bereits, also entferne ich ihn aus der Liste
+                        for (QueryDocumentSnapshot document : querySnapshot) {
+                            document.getReference().delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    showToast(activity, "Du folgst " + username + " nicht mehr.", Toast.LENGTH_SHORT);
+                                }
+                            });
+                        }
                     }
                 }
             }
         });
     }
+    public static Task<Boolean> folgeIch(String userID) {
+        String myUserID = FirebaseAuth.getInstance().getUid();
+        CollectionReference usersCollection = db.collection("users");
+        DocumentReference userDocRef = usersCollection.document(myUserID);
+        CollectionReference collectionRef = userDocRef.collection("followedUser");
+
+        Map<String, Object> follow = new HashMap<>();
+        follow.put("userID", userID);
+
+        Query query = collectionRef.whereEqualTo("userID", userID);
+
+        final TaskCompletionSource<Boolean> taskCompletionSource = new TaskCompletionSource<>();
+
+        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    QuerySnapshot querySnapshot = task.getResult();
+                    boolean isFollowing = !querySnapshot.isEmpty() && !userID.equals(myUserID);
+                    taskCompletionSource.setResult(isFollowing);
+                } else {
+                    taskCompletionSource.setException(task.getException());
+                }
+            }
+        });
+
+        return taskCompletionSource.getTask();
+    }
+
+
 
     public interface OnPostFoundListener {
         Task<List<Beitrag>> onPostFound(String documentPath);
@@ -482,6 +537,7 @@ public class Java {
 
     private static List<Beitrag> alleKommentare = new ArrayList<>();
     public static Task<List<Beitrag>> ladeAlleKommentare(String userID, Date date, RecyclerView recyclerView, MyCommentAdapter myAdapter, Activity activity) {
+        alleKommentare.clear();
         final String[] documentPath = new String[1];
         Java.findPostByDateAndUserID(userID, date, new Java.OnPostFoundListener() {
             @Override
@@ -492,11 +548,13 @@ public class Java {
                 DocumentReference documentRef = db.document(documentPath[0]);
                 CollectionReference commentsCollectionRef = documentRef.collection("comments");
 
-                return commentsCollectionRef.get().continueWith(task -> {
+                return commentsCollectionRef
+                        .get()
+                        .continueWith(task -> {
                     if (task.isSuccessful()) {
                         for (DocumentSnapshot document : task.getResult()) {
                             Beitrag beitrag = document.toObject(Beitrag.class);
-                            if (beitrag != null) {
+                            if (beitrag != null && !beitrag.getGelöscht()) {
                                 alleKommentare.add(beitrag);
                             }
                         }
@@ -583,7 +641,9 @@ public class Java {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference userCollectionRef = db.collection("users");
 
-        return userCollectionRef.document(userId).collection("Beiträge").get()
+        return userCollectionRef.document(userId).collection("Beiträge")
+                .whereEqualTo("gelöscht", false)
+                .get()
                 .continueWith(task -> {
                     if (task.isSuccessful()) {
                         List<Beitrag> beitraegeListe = new ArrayList<>();
@@ -615,7 +675,7 @@ public class Java {
             }
         }
         if (filteredList.isEmpty()) {
-            Toast.makeText(activity, "Kein Beitrag gefunden", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(activity, "Kein Beitrag gefunden", Toast.LENGTH_SHORT).show();
         } else {
             myAdapter.setFilteredList(filteredList);
         }

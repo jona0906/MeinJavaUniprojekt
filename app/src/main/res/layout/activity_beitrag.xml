@@ -6,28 +6,48 @@
     android:layout_height="match_parent"
     tools:context=".BeitragActivity">
 
+    <Button
+        android:id="@+id/deletePost"
+        android:layout_width="131dp"
+        android:layout_height="33dp"
+        android:layout_marginTop="48dp"
+        android:layout_marginEnd="32dp"
+        android:text="Beitrag löschen"
+        android:textSize="10sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <TextView
         android:id="@+id/username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
         android:layout_marginTop="52dp"
         android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.143"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/lineDate"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@+id/date"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:background="@color/black"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/date"
+        android:orientation="vertical" />
 
     <TextView
         android:id="@+id/date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.746"
+        app:layout_constraintHorizontal_bias="0.741"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/scrollView" />
-
 
     <ScrollView
         android:id="@+id/scrollView"
@@ -49,49 +69,91 @@
 
     <ImageButton
         android:id="@+id/followButton"
-        android:layout_width="109dp"
-        android:layout_height="65dp"
-        android:layout_marginEnd="28dp"
-        android:layout_marginBottom="12dp"
+        android:layout_width="170dp"
+        android:layout_height="98dp"
+        android:layout_marginBottom="4dp"
         android:backgroundTint="#00FFFFFF"
         android:scaleType="fitCenter"
         app:layout_constraintBottom_toTopOf="@+id/scrollView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/img" />
+        app:layout_constraintStart_toEndOf="@+id/username"
+        app:srcCompat="@drawable/follow_bt" />
+
+    <ImageButton
+        android:id="@+id/unfollowButton"
+        android:layout_width="178dp"
+        android:layout_height="96dp"
+        android:layout_marginBottom="4dp"
+        android:backgroundTint="#00FFFFFF"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toTopOf="@+id/scrollView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/username"
+        app:srcCompat="@drawable/unfollow_bt" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewComment"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginBottom="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/imageView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/kommentar"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toBottomOf="@+id/lineDate" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="420dp"
+        android:layout_height="70dp"
+        android:scaleType="centerCrop"
+        android:windowSoftInputMode="adjustResize"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/hintergrund"
+        tools:ignore="MissingConstraints" />
+
+    <ImageView
+        android:id="@+id/imageView8"
+        android:layout_width="420dp"
+        android:layout_height="70dp"
+        android:scaleType="fitStart"
+        android:windowSoftInputMode="adjustResize"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/kommentar_bg"
+        tools:ignore="MissingConstraints" />
 
     <EditText
         android:id="@+id/kommentar"
-        android:layout_width="291dp"
-        android:layout_height="42dp"
-        android:layout_marginTop="8dp"
+        android:layout_width="272dp"
+        android:layout_height="46dp"
+        android:layout_marginBottom="16dp"
         android:ems="10"
         android:hint="Kommentar hinzufügen"
-        android:maxLength="180"
         android:inputType="textPersonName"
+        android:maxLength="180"
+        android:windowSoftInputMode="adjustResize"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.133"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/date" />
+        app:layout_constraintHorizontal_bias="0.15"
+        app:layout_constraintStart_toStartOf="parent" />
+
 
     <Button
         android:id="@+id/kommentarHinzufügen"
-        android:layout_width="77dp"
-        android:layout_height="38dp"
+        android:layout_width="93dp"
+        android:layout_height="48dp"
         android:layout_marginStart="8dp"
+        android:backgroundTint="#00FFFFFF"
+        android:fontFamily="sans-serif"
         android:text="Send"
+        android:textColor="#FFFFFF"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.157"
+        app:layout_constraintHorizontal_bias="0.266"
         app:layout_constraintStart_toEndOf="@+id/kommentar"
         app:layout_constraintTop_toTopOf="@+id/kommentar" />
 

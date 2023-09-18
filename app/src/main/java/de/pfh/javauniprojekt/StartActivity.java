@@ -36,6 +36,7 @@ public class StartActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     startActivity(new Intent(StartActivity.this, LoginActivity.class));
+                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                     //finish();
                 }
             });
@@ -43,6 +44,7 @@ public class StartActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     startActivity(new Intent(StartActivity.this, RegisterActivity.class));
+                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
                     //finish();
                 }
             });

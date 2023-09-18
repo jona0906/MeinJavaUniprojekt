@@ -22,6 +22,7 @@ public class Beitrag implements Parcelable
     private String username;
     private String uid;
     private int likes;
+    private Boolean gelöscht;
 
     public Beitrag(String content, String username, String userID) {
         this.content = content;
@@ -60,6 +61,10 @@ public class Beitrag implements Parcelable
 
     public String getUsername() {
         return username;
+    }
+
+    public Boolean getGelöscht() {
+        return gelöscht;
     }
 
     public String getUserID() {

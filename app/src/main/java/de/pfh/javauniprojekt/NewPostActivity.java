@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -32,6 +33,8 @@ public class NewPostActivity extends AppCompatActivity {
     private TextView textViewStory;
     private boolean statement = true;
     private TextView textViewStatement;
+    private ImageView newStatement;
+    private ImageView newStory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,14 +46,16 @@ public class NewPostActivity extends AppCompatActivity {
             uid = extras.getString("uid");
 
         }
-        Objects.requireNonNull(getSupportActionBar()).setTitle("Neuer Beitrag");
 
         post_button = findViewById(R.id.post_button);
         newPost = findViewById(R.id.newPost);
         statementStorySwitch = findViewById(R.id.statementStorySwitch);
         textViewStatement = findViewById(R.id.textViewStatement);
         textViewStory = findViewById(R.id.textViewStory);
+        newStatement = findViewById(R.id.imageViewStatement);
+        newStory = findViewById(R.id.imageViewStory);
 
+        switchOff();
 
         post_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,6 +87,8 @@ public class NewPostActivity extends AppCompatActivity {
         filterArray[0] = new InputFilter.LengthFilter(neueMaximaleLaenge);
         newPost.setFilters(filterArray);
         newPost.setText(newPost.getText().toString().substring(0, Math.min(newPost.getText().toString().length(), 180)));
+        newStatement.setVisibility(View.VISIBLE);
+        newStory.setVisibility(View.INVISIBLE);
         statement = true;
     }
 
@@ -92,6 +99,8 @@ public class NewPostActivity extends AppCompatActivity {
         InputFilter[] filterArray = new InputFilter[1];
         filterArray[0] = new InputFilter.LengthFilter(neueMaximaleLaenge);
         newPost.setFilters(filterArray);
+        newStatement.setVisibility(View.INVISIBLE);
+        newStory.setVisibility(View.VISIBLE);
         statement = false;
     }
 

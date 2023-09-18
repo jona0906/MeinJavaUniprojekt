@@ -14,10 +14,13 @@
         <activity
             android:name=".BeitragActivity"
             android:exported="false"
+            android:windowSoftInputMode="adjustResize"
+            android:screenOrientation="portrait"
             android:theme="@style/MainTheme" />
         <activity
             android:name=".NewPostActivity"
             android:exported="false"
+            android:theme="@style/MainTheme"
             android:screenOrientation="portrait" />
         <activity
             android:name=".MainActivity"
@@ -31,10 +34,12 @@
         <activity
             android:name=".LoginActivity"
             android:exported="false"
+            android:theme="@style/MainTheme"
             android:screenOrientation="portrait" />
         <activity
             android:name=".RegisterActivity"
             android:exported="false"
+            android:theme="@style/MainTheme"
             android:screenOrientation="portrait" />
         <activity
             android:name=".StartActivity"

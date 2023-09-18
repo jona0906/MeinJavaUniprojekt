@@ -15,6 +15,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewInter
 
     private ImageButton ic_user;
     private ImageButton ic_newPost;
-    private ImageButton ic_reload;
+    //private ImageButton ic_reload;
     private List<Beitrag> beitraegeListe;
     private RecyclerView recyclerView;
     private SearchView searchView;
@@ -51,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewInter
 
         ic_user = findViewById(R.id.ic_user);
         ic_newPost = findViewById(R.id.ic_newPost);
-        ic_reload = findViewById(R.id.reload);
+        //ic_reload = findViewById(R.id.reload);
         recyclerView = findViewById(R.id.recyclerview);
         searchView = findViewById(R.id.searchView);
         followedPosts = findViewById(R.id.followedPosts);
@@ -78,6 +79,16 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewInter
             }
         });
 
+        /*
+        SearchView searchView = findViewById(R.id.searchView);
+        EditText searchEditText = searchView.findViewById(androidx.appcompat.R.id.search_src_text);
+        searchEditText.setHintTextColor(getResources().getColor(R.color.white));
+        searchEditText.setTextColor(getResources().getColor(R.color.white));
+        searchEditText.setHighlightColor(getResources().getColor(R.color.white));
+
+         */
+
+
         ic_user.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -89,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewInter
             }
         });
 
+        /*
         ic_reload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -104,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewInter
                 });
             }
         });
-
+         */
         ic_newPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -172,10 +184,12 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewInter
 
 
     public void onItemClick(int position) {
-        Beitrag beitrag = new Beitrag(beitraegeListe.get(position).getContent(), beitraegeListe.get(position).getUsername(), beitraegeListe.get(position).getUserID());
+        List<Beitrag> items = MyAdapter.getItems();
+        Log.d("TAG", "onItemClick: " + items.size());
+        Beitrag beitrag = new Beitrag(items.get(position).getContent(), items.get(position).getUsername(), items.get(position).getUserID());
         Intent intent = new Intent(MainActivity.this, BeitragActivity.class);
         Bundle bundle = new Bundle();
-        bundle.putSerializable("Datum", beitraegeListe.get(position).getDate());
+        bundle.putSerializable("Datum", items.get(position).getDate());
         intent.putExtra("Beitrag", beitrag);
         intent.putExtra("Kommentar", false);
         intent.putExtra("username", myUsername);

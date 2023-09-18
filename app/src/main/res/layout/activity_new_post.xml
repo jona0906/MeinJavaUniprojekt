@@ -4,26 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/main_bg"
     tools:context=".NewPostActivity">
 
-
-    <TextView
-        android:id="@+id/textViewStatement"
-        android:layout_width="67dp"
-        android:layout_height="26dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="60dp"
-        android:text="Statement"
-        android:textAlignment="textEnd"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/post_button"
-        app:layout_constraintEnd_toStartOf="@+id/statementStorySwitch" />
 
     <Button
         android:id="@+id/post_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="80dp"
+        android:layout_marginBottom="48dp"
         android:text="Post"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -32,39 +21,76 @@
 
     <EditText
         android:id="@+id/newPost"
-        android:layout_width="302dp"
-        android:layout_height="142dp"
-        android:layout_marginTop="96dp"
+        android:layout_width="391dp"
+        android:layout_height="212dp"
+        android:backgroundTint="#FFFFFF"
         android:ems="10"
         android:gravity="start|top"
         android:inputType="textMultiLine"
         android:maxLength="180"
+        android:textColor="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-
-    <Switch
-        android:id="@+id/statementStorySwitch"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="60dp"
-        app:layout_constraintBottom_toTopOf="@+id/post_button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:ignore="UseSwitchCompatOrMaterialXml" />
 
     <TextView
         android:id="@+id/textViewStory"
         android:layout_width="67dp"
         android:layout_height="26dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginBottom="60dp"
+        android:layout_marginStart="44dp"
+        android:layout_marginBottom="136dp"
         android:text="Story"
-        app:layout_constraintBottom_toTopOf="@+id/post_button"
+        android:textColor="#FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/statementStorySwitch" />
+
+    <TextView
+        android:id="@+id/textViewStatement"
+        android:layout_width="67dp"
+        android:layout_height="26dp"
+        android:layout_marginEnd="44dp"
+        android:layout_marginBottom="136dp"
+        android:text="Statement"
+        android:textAlignment="textEnd"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/statementStorySwitch" />
+
+    <Switch
+        android:id="@+id/statementStorySwitch"
+        android:layout_width="50dp"
+        android:layout_height="27dp"
+        android:layout_marginBottom="136dp"
+        android:thumbTint="@color/white"
+        android:trackTint="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+    <ImageView
+        android:id="@+id/imageViewStatement"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/newstatement_txt" />
+
+    <ImageView
+        android:id="@+id/imageViewStory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/newstory_txt" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
