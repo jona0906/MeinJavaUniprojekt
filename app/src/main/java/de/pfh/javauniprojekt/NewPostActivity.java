@@ -1,14 +1,10 @@
 package de.pfh.javauniprojekt;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.InputFilter;
-import android.text.InputType;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
@@ -16,12 +12,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-
-import java.util.List;
-import java.util.Objects;
 
 public class NewPostActivity extends AppCompatActivity {
 
@@ -44,7 +34,6 @@ public class NewPostActivity extends AppCompatActivity {
         if (extras != null) {
             username = extras.getString("username");
             uid = extras.getString("uid");
-
         }
 
         post_button = findViewById(R.id.post_button);

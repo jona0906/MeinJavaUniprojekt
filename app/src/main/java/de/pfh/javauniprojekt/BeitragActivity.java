@@ -31,7 +31,7 @@ public class BeitragActivity extends AppCompatActivity implements RecyclerViewIn
     private Button kommentarHinzufügen;
     private TextView kommentar;
     private List<Beitrag> alleKommentare;
-    private Boolean kommentarVorhanden;
+    private boolean kommentarVorhanden;
     private String myUsername;
     private String myUID;
     private ImageView imageView;
@@ -150,7 +150,7 @@ public class BeitragActivity extends AppCompatActivity implements RecyclerViewIn
                 @Override
                 public void onComplete(Task<Boolean> task) {
                     if (task.isSuccessful()) {
-                        Boolean isFollowing = task.getResult();
+                        boolean isFollowing = task.getResult();
                         if (isFollowing) {
                             followButton.setVisibility(View.INVISIBLE);
                             unfollowButton.setVisibility(View.VISIBLE);

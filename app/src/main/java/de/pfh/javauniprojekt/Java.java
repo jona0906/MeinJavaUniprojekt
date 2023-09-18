@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,11 +24,9 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.SetOptions;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -37,11 +34,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class Java {
-    private static FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private static CollectionReference usersCollection = db.collection("users");
+
+    private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private static final CollectionReference usersCollection = db.collection("users");
 
     public static Task<Boolean> istVerfuegbar(String username) {
         Query query = usersCollection.whereEqualTo("username", username);
@@ -81,7 +80,7 @@ public class Java {
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
                     showToast(activity, "Registrierung erfolgreich", Toast.LENGTH_LONG);
-                    saveUsername(username, FirebaseAuth.getInstance().getCurrentUser().getUid(), activity);
+                    saveUsername(username, Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid(), activity);
                     activity.startActivity(new Intent(activity, StartActivity.class));
                     activity.finish();
                 } else {
@@ -122,7 +121,7 @@ public class Java {
     }
 
     public static void sortByDate(List<Beitrag> alleBeiträge) {
-        Collections.sort(alleBeiträge, new Comparator<Beitrag>() {
+        alleBeiträge.sort(new Comparator<Beitrag>() {
             @Override
             public int compare(Beitrag beitrag1, Beitrag beitrag2) {
                 return beitrag2.getDate().compareTo(beitrag1.getDate());
@@ -130,13 +129,13 @@ public class Java {
         });
     }
     public static void addComment(Activity activity, String newPost, String username, String uid, Date postDate, String postUserID){
-        Log.d("Java", "addComment: " + postUserID + "  " + postDate);
         Java.findPostByDateAndUserID(postUserID, postDate, new Java.OnPostFoundListener() {
             @Override
             public Task<List<Beitrag>> onPostFound(String documentPath) {
                 String userId = FirebaseAuth.getInstance().getUid();
                 FirebaseFirestore firestore = FirebaseFirestore.getInstance();
                 DocumentReference docRef = firestore.document(documentPath);
+                assert userId != null;
                 DocumentReference userDocRef = usersCollection.document(userId);
                 CollectionReference collectionRef = docRef.collection("comments");
 
@@ -151,7 +150,7 @@ public class Java {
                 collectionRef.add(postData)
                         .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
                             @Override
-                            public void onComplete(Task<DocumentReference> task) {
+                            public void onComplete(@NonNull Task<DocumentReference> task) {
                                 if (task.isSuccessful()) {
                                     Toast.makeText(activity, "Kommentar erfolgreich hinzugefügt", Toast.LENGTH_SHORT).show();
                                 }
@@ -202,19 +201,7 @@ public class Java {
 
                         Map<String, Object> updates = new HashMap<>();
                         updates.put("hatBeiträge", true);
-                        userDocRef.update(updates)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
-                                        Log.d("Firestore", "hatBeiträge auf true gesetzt");
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.e("Firestore", "Fehler beim Aktualisieren von hatBeiträge", e);
-                                    }
-                                });
+                        userDocRef.update(updates);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -307,14 +294,12 @@ public class Java {
         Date date;
         String myUserID = FirebaseAuth.getInstance().getUid();
         if (!filteredList.isEmpty()) {
-            Log.d("Java", "Nutze filtered List.");
             userID = filteredList.get(position).getUserID();
             date = filteredList.get(position).getDate();
         } else {
             userID = aUserID;
             date = aDate;
         }
-        Log.d("Java", "onPostFound: " + userID + " " + date);
         Java.findPostByDateAndUserID(userID, date, new Java.OnPostFoundListener() {
             @Override
             public Task<List<Beitrag>> onPostFound(String documentPath) {
@@ -502,8 +487,10 @@ public class Java {
         DocumentReference userDocRef = usersCollection.document(myUserID);
         CollectionReference collectionRef = userDocRef.collection("followedUser");
 
+        /*
         Map<String, Object> follow = new HashMap<>();
         follow.put("userID", userID);
+         */
 
         Query query = collectionRef.whereEqualTo("userID", userID);
 
@@ -517,11 +504,10 @@ public class Java {
                     boolean isFollowing = !querySnapshot.isEmpty() && !userID.equals(myUserID);
                     taskCompletionSource.setResult(isFollowing);
                 } else {
-                    taskCompletionSource.setException(task.getException());
+                    taskCompletionSource.setException(Objects.requireNonNull(task.getException()));
                 }
             }
         });
-
         return taskCompletionSource.getTask();
     }
 
@@ -564,19 +550,17 @@ public class Java {
                         recyclerView.setAdapter(myAdapter);
                         return alleKommentare;
                     } else {
-                        throw task.getException();
+                        throw Objects.requireNonNull(task.getException());
                     }
                 });
             }
 
             @Override
             public void onPostNotFound() {
-                Log.d("TAG", "nicht gefunden");
             }
 
             @Override
             public void onError(Exception e) {
-                Log.d("TAG", "fehler");
             }
         });
         return Tasks.forResult(new ArrayList<Beitrag>());
@@ -653,11 +637,6 @@ public class Java {
                         }
                         return beitraegeListe;
                     } else {
-                        //Fehler
-                        Exception exception = task.getException();
-                        if (exception != null) {
-                            Log.e("Java", "Fehler beim Laden der Beiträge: " + exception.getMessage());
-                        }
                         return null;
                     }
                 });
@@ -723,7 +702,7 @@ public class Java {
 
                     taskCompletionSource.setResult(beitraegeListe);
                 } else {
-                    taskCompletionSource.setException(completedTask.getException());
+                    taskCompletionSource.setException(Objects.requireNonNull(completedTask.getException()));
                 }
             }
         });

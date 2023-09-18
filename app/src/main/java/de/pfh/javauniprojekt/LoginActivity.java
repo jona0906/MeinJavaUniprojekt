@@ -1,6 +1,5 @@
 package de.pfh.javauniprojekt;
 
-//import android.support.v7.app.AppCompatActivity; //Hat mal nicht funktioniert
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -9,15 +8,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthException;
+
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -25,7 +22,6 @@ public class LoginActivity extends AppCompatActivity {
     private EditText password;
     private ImageButton login;
     private Button passwordLost;
-
     private FirebaseAuth auth;
 
     @Override
@@ -49,7 +45,8 @@ public class LoginActivity extends AppCompatActivity {
                 String txt_password = password.getText().toString();
                 if (TextUtils.isEmpty(txt_email))
                 {
-                    Toast.makeText(LoginActivity.this, "Empty", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, "Bitte gib zuerst deine E-Mail Adresse ein.", Toast.LENGTH_SHORT).show();
+                    passwordLost.setVisibility(View.VISIBLE);
                 }
                 else
                 {
@@ -63,13 +60,13 @@ public class LoginActivity extends AppCompatActivity {
                                                 Toast.makeText(LoginActivity.this, "Passwort zurückgesetzt. Überprüfen Sie Ihre E-Mails.", Toast.LENGTH_SHORT).show();
                                             } else {
                                                 Toast.makeText(LoginActivity.this, "Fehler beim Zurücksetzen des Passworts.", Toast.LENGTH_SHORT).show();
-                                                passwordLost.setText("Erneut versuchen");
+                                                passwordLost.setText("Passwort zurücksetzen erneut versuchen");
                                                 passwordLost.setVisibility(View.VISIBLE);
                                             }
                                         });
                             } else {
                                 Toast.makeText(LoginActivity.this, "Diese E-Mail-Adresse ist nicht registriert.", Toast.LENGTH_SHORT).show();
-                                passwordLost.setText("Erneut versuchen");
+                                passwordLost.setText("Passwort zurücksetzen erneut versuchen");
                                 passwordLost.setVisibility(View.VISIBLE);
                             }
                         } else {
@@ -88,7 +85,7 @@ public class LoginActivity extends AppCompatActivity {
                 String txt_password = password.getText().toString();
                 if (TextUtils.isEmpty(txt_email) || TextUtils.isEmpty(txt_password))
                 {
-                    Toast.makeText(LoginActivity.this, "Empty", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, "Bitte gib dein Passwort und deine E-Mail Adresse ein.", Toast.LENGTH_SHORT).show();
                 }
                 else {
                     loginUser(txt_email, txt_password);
@@ -111,7 +108,7 @@ public class LoginActivity extends AppCompatActivity {
         .addOnFailureListener(new OnFailureListener() {
         @Override
         public void onFailure(@NonNull Exception e) {
-            Toast.makeText(LoginActivity.this, "Login fehlgeschlagen. Überprüfen Sie Ihre Anmeldeinformationen.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(LoginActivity.this, "Login fehlgeschlagen, überprüfe deine Anmeldeinformationen.", Toast.LENGTH_SHORT).show();
         }
     });
     }

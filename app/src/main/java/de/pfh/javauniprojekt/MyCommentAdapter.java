@@ -1,16 +1,12 @@
 package de.pfh.javauniprojekt;
 
-
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
-import java.util.Date;
 import java.util.List;
 
 public class MyCommentAdapter extends RecyclerView.Adapter<MyCommentViewHolder> {
@@ -27,7 +23,6 @@ public class MyCommentAdapter extends RecyclerView.Adapter<MyCommentViewHolder> 
         this.recyclerView = recyclerView;
         this.activity = activity;
         this.recyclerViewInterface = recyclerViewInterface;
-
     }
 
         @Override
@@ -53,7 +48,6 @@ public class MyCommentAdapter extends RecyclerView.Adapter<MyCommentViewHolder> 
     public void setItemList(List<Beitrag> filteredList)
     {
         items = filteredList;
-        Log.d("MyAdapter", "setFilteredList: " + items.size());
         notifyDataSetChanged();
     }
 }

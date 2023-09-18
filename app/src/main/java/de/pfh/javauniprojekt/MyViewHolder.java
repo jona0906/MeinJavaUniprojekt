@@ -3,14 +3,10 @@ package de.pfh.javauniprojekt;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class MyViewHolder extends RecyclerView.ViewHolder {
-
     ImageView imageView;
     TextView content;
     TextView date;
@@ -24,7 +20,6 @@ public class MyViewHolder extends RecyclerView.ViewHolder {
         date = itemView.findViewById(R.id.date);
         user = itemView.findViewById(R.id.user);
         likes = itemView.findViewById(R.id.likes);
-
 
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override

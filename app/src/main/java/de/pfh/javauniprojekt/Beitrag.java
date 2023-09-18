@@ -3,15 +3,7 @@ package de.pfh.javauniprojekt;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-
 import androidx.annotation.NonNull;
-
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.FirebaseFirestore;
-
-import java.text.ParseException;
-import java.util.Comparator;
 import java.util.Date;
 
 public class Beitrag implements Parcelable
@@ -22,7 +14,7 @@ public class Beitrag implements Parcelable
     private String username;
     private String uid;
     private int likes;
-    private Boolean gelöscht;
+    private boolean gelöscht;
 
     public Beitrag(String content, String username, String userID) {
         this.content = content;
@@ -63,7 +55,7 @@ public class Beitrag implements Parcelable
         return username;
     }
 
-    public Boolean getGelöscht() {
+    public boolean getGelöscht() {
         return gelöscht;
     }
 

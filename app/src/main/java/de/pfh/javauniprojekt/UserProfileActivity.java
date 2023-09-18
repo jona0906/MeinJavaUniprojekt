@@ -2,6 +2,7 @@ package de.pfh.javauniprojekt;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -12,6 +13,8 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Objects;
 
 public class UserProfileActivity extends AppCompatActivity {
 
@@ -28,25 +31,16 @@ public class UserProfileActivity extends AppCompatActivity {
             username = extras.getString("username");
         }
 
-        getSupportActionBar().setTitle("Meine Daten");
+        Objects.requireNonNull(getSupportActionBar()).setTitle("Meine Daten");
 
         logout = findViewById(R.id.logout);
 
         TextView nutzer = findViewById(R.id.nutzer);
         TextView textViewUsername = findViewById(R.id.username);
 
-        nutzer.setText("Angemeldet als: " + FirebaseAuth.getInstance().getCurrentUser().getEmail());
+        String angemeldetAls = "Angemeldet als: " + FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        nutzer.setText(angemeldetAls);
         textViewUsername.setText(username);
-        /*FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        String userId = currentUser.getUid();
-        FirebaseFirestore.getInstance().collection("users").document(userId).get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        String username = documentSnapshot.getString("username");
-                        String usernameShow = "Benutzername: "+ username;
-                        textViewUsername.setText(usernameShow);
-                    }
-                }); */
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
