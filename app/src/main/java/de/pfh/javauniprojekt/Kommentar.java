@@ -1,6 +1,14 @@
 package de.pfh.javauniprojekt;
-
+/*
 import java.util.Date;
+
+
+
+   Hinweis: Es war mal angedacht Kommentar als ein extra Objekt zu speichern. Da diese allerdings nahezu die gleichen Eingenschaft
+            aufweisen, wie ein Beitrags-Objekt werden Kommentare nun auch als Beitrag gespeichert. Somit hat man zudem die Möglichkeit
+            Funktionen, wie Likes von Kommentaren im Nachhinein noch leicht zu implementieren.
+
+
 
 public class Kommentar {
 
@@ -31,3 +39,5 @@ public class Kommentar {
         return userID;
     }
 }
+
+ */

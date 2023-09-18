@@ -2,7 +2,7 @@ package de.pfh.javauniprojekt;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.util.Log;
+
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -37,11 +37,21 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * In dieser Klasse werden alle Methoden ausgeführt, welche keinen direkten Einfluss auf die Android Schicht des Programmes haben.
+ * Die meisten Methoden in dieser Klasse arbeiten mit der Firebase Datenbank und aktualisieren die dortigen Beiträge.
+ */
 public class Java {
-
     private static final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private static final CollectionReference usersCollection = db.collection("users");
+    private static List<Beitrag> alleKommentare = new ArrayList<>();
+    private static List<Beitrag> filteredList = new ArrayList<>();
 
+    /**
+     * Die Methode testet, ob der Nutzername bereits vergeben ist.
+     * @param username Nutzername, welcher getestet werden soll.
+     * @return wahr oder falsch, je nachdem ob der Name vergeben ist.
+     */
     public static Task<Boolean> istVerfuegbar(String username) {
         Query query = usersCollection.whereEqualTo("username", username);
         return query.get()
@@ -56,6 +66,11 @@ public class Java {
                 });
     }
 
+    /**
+     * Die Methode testet, ob die Mail registriert ist.
+     * @param email Mail, welche getestet werden soll.
+     * @return wahr oder falsch, je nachdem ob die Mail registriert ist.
+     */
     public static Task<Boolean> isEmailRegistered(String email) {
         final TaskCompletionSource<Boolean> taskCompletionSource = new TaskCompletionSource<>();
         FirebaseAuth.getInstance().fetchSignInMethodsForEmail(email)
@@ -74,8 +89,20 @@ public class Java {
         return taskCompletionSource.getTask();
     }
 
+    /**
+     * Diese Methode legt einen neunen Benutzer in Firebase an.
+     * @param email Mail, mit welcher sich der Nutzer registrieren möchte.
+     * @param password Passwort, welches der Nutzer zur Registrierung eingegeben hat.
+     * @param username Nutzername, welchen der Nutzer zur Registrierung gewählt hat.
+     * @param auth FirebaseAuth-Instanz für die Authentifizierung.
+     * @param activity Aktivität, von welcher die Methode aus aufgrufen wurde.
+     */
     public static void registerUser(String email, String password, String username, FirebaseAuth auth, Activity activity) {
         auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(activity, new OnCompleteListener<AuthResult>() {
+            /**
+             * Methode, welche erst startet, wenn der Nutzer angelegt wurde.
+             * @param task Aufgabe, welche gerade läuft.
+             */
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()) {
@@ -91,6 +118,12 @@ public class Java {
 
     }
 
+    /**
+     * Methode zum Speichern des Nutzernamens in Firebase.
+     * @param username Nutzername, welcher gespeichert werden soll.
+     * @param userId Zugehörige Nutzer-ID, um den Nutzernamen zuordnen zu können.
+     * @param activity Laufende Aktivität, welche übergeben wird.
+     */
     private static void saveUsername(String username, String userId, Activity activity) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference userRef = db.collection("users").document(userId);
@@ -116,10 +149,20 @@ public class Java {
                 });
     }
 
+    /**
+     * Methode zum zeigen eines Toasts.
+     * @param activity Aktivität, wo der Toast gezeigt werden soll.
+     * @param message Nachricht, welche gezeigt werden soll.
+     * @param duration Dauer, wie lange die Nachricht angezigt werden soll.
+     */
     private static void showToast(Activity activity, String message, int duration) {
         Toast.makeText(activity, message, duration).show();
     }
 
+    /**
+     * Sortiert die Liste mit Beiträgen nach dem Datum, indem sie das Datum aus den Beiträgen ausliest.
+     * @param alleBeiträge Eingegebene Liste an Beiträgen, welche sortiert werden soll.
+     */
     public static void sortByDate(List<Beitrag> alleBeiträge) {
         alleBeiträge.sort(new Comparator<Beitrag>() {
             @Override
@@ -128,8 +171,22 @@ public class Java {
             }
         });
     }
+
+    /**
+     * Fügt einen Kommentar zu einem Beitrag hinzu.
+     * @param activity Aktivität, wo die Methode aufgerufen wurde.
+     * @param newPost Inhalt des Beitrages, welcher erstellt werden soll.
+     * @param username Nutzername der Person, die den Beitrag erstellt.
+     * @param uid Nutzer-ID der Person, die den Beitrag erstellt.
+     * @param postDate Datum des Beitrages, unter welchem der Kommentar stehen soll
+     * @param postUserID Nutzer-ID des Beitrages, unter welchem der Kommentar stehen soll
+     */
     public static void addComment(Activity activity, String newPost, String username, String uid, Date postDate, String postUserID){
         Java.findPostByDateAndUserID(postUserID, postDate, new Java.OnPostFoundListener() {
+            /**
+             * Die Methode startet, wenn die vorherige Methode abgeschlossen ist.
+             * @param documentPath Dokumentenpfad, des Beitrages unter dem der Kommentar stehen soll.
+             */
             @Override
             public Task<List<Beitrag>> onPostFound(String documentPath) {
                 String userId = FirebaseAuth.getInstance().getUid();
@@ -149,6 +206,9 @@ public class Java {
 
                 collectionRef.add(postData)
                         .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                            /**
+                             * Löst aus, wenn der Kommentar erfolgreich hochgeladen wurde und zeigt dieses als Toast an.
+                             */
                             @Override
                             public void onComplete(@NonNull Task<DocumentReference> task) {
                                 if (task.isSuccessful()) {
@@ -161,7 +221,6 @@ public class Java {
 
             @Override
             public void onPostNotFound() {
-
             }
 
             @Override
@@ -171,6 +230,14 @@ public class Java {
         });
     }
 
+    /**
+     * Methode zum Hinzufügen eines neuen Beitrags
+     * @param activity Aktivität, aus der die Methode aufgerufen wird.
+     * @param newPost Inhalt des neuen Posts.
+     * @param username Nutzername der Person, welche den Post veröffentlicht hat.
+     * @param uid Nutzer-ID der Person, welche den Post veröffentlicht hat.
+     * @param statement Wahr oder falsch, je nachdem ob es sich bei dem Post um ein Statement (einem besonders kurzen Post) handelt
+     */
     public static void addPost(Activity activity, String newPost, String username, String uid, boolean statement) {
         String userId = FirebaseAuth.getInstance().getUid();
         Map<String, Object> postData = new HashMap<>();
@@ -186,7 +253,6 @@ public class Java {
         }
         postData.put("statement", statement);
 
-
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
         CollectionReference usersCollection = firestore.collection("users");
         DocumentReference userDocRef = usersCollection.document(userId);
@@ -194,6 +260,9 @@ public class Java {
 
         beitraegeCollection.add(postData)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    /**
+                     * Wird ausgelöst, wenn der Beitrag erfolgreich zur Sammlung hinzugefügt wurde. Die Methode zeigt eine Erfolgsmeldung an.
+                     */
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
                         // Erfolgreich hinzugefügt
@@ -205,6 +274,10 @@ public class Java {
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
+                    /**
+                     * Wird ausgeführt, falls es beim Hinzufügen einen Fehler gab. Die Methode zeigt eine Fehlermeldung an.
+                     * @param e Fehlermeldung
+                     */
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         // Fehler beim Hinzufügen
@@ -213,8 +286,20 @@ public class Java {
                 });
     }
 
+    /**
+     * Methode, welche aufgerufen wird, um einen bestimmten Post zu löschen. Die Methode ändert die Eigenschaft "gelöscht" auf true,
+     * wodurch der Beitrag den Nutzern nicht mehr angezeigt wird. Dennoch bleibt der Beitrag in Firebase gepeichert, um Konflikte zu
+     * vermeiden und bei Unklarheiten ihn später noch betrachten zu können.
+     * @param userID Nutzer-ID, des Beitrages, welcher gelöscht werden soll.
+     * @param date Veröffentlichungsdatum, des Beitrages, welcher gelöscht werden soll.
+     * @param activity Aktivität, von welcher die Methode gestartet wurde.
+     */
     public static void deletePost(String userID, Date date, Activity activity){
         findPostByDateAndUserID(userID, date, new OnPostFoundListener() {
+            /**
+             * Wenn der gesuchte Post gefunden wurde wird hier "gelöscht" auf wahr gesetzt.
+             * @param documentPath Dokumentenpfad des Posts, welcher gelöscht werden soll.
+             */
             @Override
             public Task<List<Beitrag>> onPostFound(String documentPath) {
                 FirebaseFirestore firestore = FirebaseFirestore.getInstance();
@@ -230,6 +315,11 @@ public class Java {
                 return null;
             }
 
+            /**
+             * Wenn der Post nicht gefunden wurde liegt es daran, dass es sich um einen Kommentar handelt. Ist dies der Fall,
+             * so kommt noch die Fehlermeldung, dass Kommentare nicht gelöscht werden können.
+             * In Zukunft kann man hier eine Methode aufrufen, welche auf Kommentare finden kann.
+             */
             @Override
             public void onPostNotFound() {
                 Toast.makeText(activity, "Kommentare können leider noch nicht gelöscht werden...", Toast.LENGTH_SHORT).show();
@@ -242,6 +332,13 @@ public class Java {
         });
     }
 
+    /**
+     * Die Methode testet, ob der Nutzer diesen Beitrag bereits liked oder noch nicht und gibt das entsprechende Ergebnis zurück.
+     * Getestet wird dies über eine Liste, welche jeder Beitrag enthält und welche alle User-IDs speichert, die den Beitrag geliked haben.
+     * @param userID Nutzer-ID der Person, welche den Beitrag veröffentlicht hat.
+     * @param date Datum, an welchem der gesuchte Beitrag veröffentlicht wurde.
+     * @return Der Nutzer hat den Beitrag schon geliked oder der Nutzer hat ihn noch nicht geliked.
+     */
     public static Task<Boolean> isLikeVorhanden(String userID, Date date){
 
         final TaskCompletionSource<Boolean> taskCompletionSource = new TaskCompletionSource<>();
@@ -277,17 +374,23 @@ public class Java {
 
                 @Override
                 public void onPostNotFound() {
-
                 }
 
                 @Override
                 public void onError(Exception e) {
-
                 }
             });
         return taskCompletionSource.getTask();
     }
 
+    /**
+     * Diese Methode fügt einen Like zu einem Beitrag hinzu und setzt den Nutzer auf die Liste, um zu speichern, dass er den Beitrag
+     * geliked hat. Somit kann des User den Beitrag nicht doppelt liken.
+     * @param position Position des Beitrages in der Liste.
+     * @param aUserID Nutzer-ID, der Person, welche den Beitrag veröffentlicht hat.
+     * @param aDate Datum der Veröffentlichung.
+     * @return
+     */
     public static Task<Void> addLike(int position, String aUserID, Date aDate) {
         TaskCompletionSource<Void> taskCompletionSource = new TaskCompletionSource<>();
         String userID;
@@ -316,7 +419,6 @@ public class Java {
                         if (task.isSuccessful()) {
                             QuerySnapshot querySnapshot = task.getResult();
                             if (querySnapshot != null && !querySnapshot.isEmpty()) {
-                                Log.d("Java", "Bin am löschen");
                                 Query query = collectionRef.whereEqualTo("userID", myUserID);
 
                                 query.get().addOnCompleteListener(task2 -> {
@@ -379,16 +481,11 @@ public class Java {
                                                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                                 @Override
                                                                 public void onComplete(@NonNull Task<Void> task) {
-                                                                    if (!task.isSuccessful()) {
-                                                                        //Fehler (Fehlermeldung hier irgendwo einbauen?)(Toast?)
-                                                                    }
                                                                 }
                                                             });
                                                 }
                                             }
                                         });
-
-
                             }
                         }
                     }
@@ -407,7 +504,15 @@ public class Java {
         return taskCompletionSource.getTask();
     }
 
-
+    /**
+     * Diese Methode ist dafür verantwortlich, dass Beiträge aus dem RecyclerView auch in Firebase gefunden werden. Mithilfe der User-ID
+     * und des Veröffentlichungsdatums sucht sie den passenden Beitrag und gibt den Pfad, wo dieser in Firebase liegt, als String zurück.
+     * Somit können die Beiträge auch in Firebase gefunden werden, obwohl sie selbst nicht ihren Pfad gespeichert haben.
+     * Nachteil dieser Methode ist derzeitig noch, dass wenn derselbse User zur selben Zeit 2 Posts veröffentlicht, diese Methode
+     * die beiden Posts nicht auseinanderhalten kann.
+     * @param userID Nutzer-ID des Posts, welcher gefunden werden soll
+     * @param date Veröffentlichungsdatum des Posts, welcher gefunden werden soll.
+     */
     public static void findPostByDateAndUserID(String userID, Date date, final OnPostFoundListener listener) {
         CollectionReference usersCollection = db.collection("users");
         DocumentReference userDocRef = usersCollection.document(userID);
@@ -436,6 +541,12 @@ public class Java {
         });
     }
 
+    /**
+     * Methode, welche aufgerufen wird, um einem Nutzer zu folgen
+     * @param userID Nutzer-ID des Nutzers, welchem gefolgt werden soll.
+     * @param username Nutzername des Nutzers, welchem gefolgt werden soll.
+     * @param activity Aktivität, von wo die Methode aufgerufen wird.
+     */
     public static void followUser(String userID, String username, Activity activity) {
         String myUserID = FirebaseAuth.getInstance().getUid();
         CollectionReference usersCollection = db.collection("users");
@@ -481,16 +592,17 @@ public class Java {
             }
         });
     }
+
+    /**
+     * Testet, ob der eingeloggte Nutzer dem übergebenen Nutzer folgt.
+     * @param userID Nutzer-ID des Nutzers, welcher überprüft werden soll.
+     * @return Wahr oder falsch, je nachdem ob man dem Benutzer bereits folgt.
+     */
     public static Task<Boolean> folgeIch(String userID) {
         String myUserID = FirebaseAuth.getInstance().getUid();
         CollectionReference usersCollection = db.collection("users");
         DocumentReference userDocRef = usersCollection.document(myUserID);
         CollectionReference collectionRef = userDocRef.collection("followedUser");
-
-        /*
-        Map<String, Object> follow = new HashMap<>();
-        follow.put("userID", userID);
-         */
 
         Query query = collectionRef.whereEqualTo("userID", userID);
 
@@ -511,8 +623,6 @@ public class Java {
         return taskCompletionSource.getTask();
     }
 
-
-
     public interface OnPostFoundListener {
         Task<List<Beitrag>> onPostFound(String documentPath);
 
@@ -521,7 +631,15 @@ public class Java {
         void onError(Exception e);
     }
 
-    private static List<Beitrag> alleKommentare = new ArrayList<>();
+    /**
+     * Diese Methode lädt alle Kommentare für einen bestimmten Beitrag.
+     * @param userID Nutzer-ID der Perosn, welche den Beitrag veröffentlicht hat, für den die Kommentare geladen werden sollen.
+     * @param date Veröffentlichungsdatum, des Beitrages, für den die Kommentare geladen werden sollen.
+     * @param recyclerView Recycler View, in welchen die Daten geschrieben werden sollen.
+     * @param myAdapter Adapter des Recycler Views
+     * @param activity Aktivität, von wo aus die Methode aufgerufen wurde
+     * @return Liste an Kommentaren
+     */
     public static Task<List<Beitrag>> ladeAlleKommentare(String userID, Date date, RecyclerView recyclerView, MyCommentAdapter myAdapter, Activity activity) {
         alleKommentare.clear();
         final String[] documentPath = new String[1];
@@ -566,11 +684,18 @@ public class Java {
         return Tasks.forResult(new ArrayList<Beitrag>());
     }
 
+    /**
+     * Die Methode gibt die Liste "alleKommentare" zurück.
+     * @return Liste "alleKommentare"
+     */
     public static List<Beitrag> alleKommentare(){
         return alleKommentare;
     }
 
-
+    /**
+     * Die Methode lädt alle in Firebase hochgeladenen Beiträge
+     * @return Alle Beiträge, welche hochgeladen wurden.
+     */
     public static Task<List<Beitrag>> ladeAlleBeiträge() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference userCollectionRef = db.collection("users");
@@ -595,13 +720,8 @@ public class Java {
                             Task<List<Beitrag>> taskB = ladeBeitraegeFuerBenutzer(user);
                             beitraegeTasks.add(taskB);
                         }
-
                         return Tasks.whenAllSuccess(beitraegeTasks);
                     } else {
-                        Exception exception = task.getException();
-                        if (exception != null) {
-                            Log.e("Java", "Fehler beim Laden der Benutzer: " + exception.getMessage());
-                        }
                         return Tasks.forResult(new ArrayList<List<Beitrag>>());
                     }
                 })
@@ -611,16 +731,17 @@ public class Java {
                         for (List<Beitrag> beitraegeListe : beitraegeErgebnisse) {
                             alleBeitraegeListe.addAll(beitraegeListe);
                         }
-                    } else {
-                        Exception exception = task.getException();
-                        if (exception != null) {
-                            Log.e("Java", "Fehler beim Laden der Beiträge: " + exception.getMessage());
-                        }
                     }
                     return alleBeitraegeListe;
                 });
     }
 
+    /**
+     * Diese Methode lädt alle Beiträge eines Benutzers. Sie wird z.B. aufgerufen von der Methode "ladeAlleBeiträge", um Beiträge der
+     * einzelnen Benutzer zu laden.
+     * @param userId Nutzer-ID des Nutzers, von dem die Beiträge geladen werden sollen.
+     * @return Liste der Beiträge des Nutzers.
+     */
     public static Task<List<Beitrag>> ladeBeitraegeFuerBenutzer(String userId) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference userCollectionRef = db.collection("users");
@@ -642,8 +763,14 @@ public class Java {
                 });
     }
 
-    private static List<Beitrag> filteredList = new ArrayList<>();
-
+    /**
+     * Die Methode wird aufgerufen, um die Liste "beitraegeListe" zu filtern. So werden nur die Beiträge in die neue Liste hinzugefügt,
+     * welche den übergebenen Text enthalten.
+     * @param text Text, nach welchem gesucht werden soll. Es werden sowohl die Inhalte als auch die Nutzernamen durchsucht.
+     * @param beitraegeListe Liste mit allen Beiträgen, welche gefiltert werden soll.
+     * @param activity Aktivität, von wo die Methode aufgerufen wird.
+     * @param myAdapter Adapter, wo die Liste gesetzt werden soll.
+     */
     public static void filterList(String text, List<Beitrag> beitraegeListe, Activity activity, MyAdapter myAdapter) {
         filteredList.clear();
         if (beitraegeListe != null) {
@@ -660,6 +787,12 @@ public class Java {
         }
     }
 
+    /**
+     * Diese Methode wandelt das Datum eines Beitrages so ab, dass sofern der Beitrag erst vor einer gewissen Zeit hochgeladen wurde,
+     * ein String zurückgegeben wird, in welchem steht "Vor x Minuten hochgeladen.
+     * @param date
+     * @return String Wert mit passender Formatierung.
+     */
     public static String dateCheck(Date date) {
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy, HH:mm", Locale.getDefault());
         SimpleDateFormat sdfTime = new SimpleDateFormat("HH:mm", Locale.getDefault());
@@ -676,7 +809,14 @@ public class Java {
         }
     }
 
-
+    /**
+     * Die Methode wird aufgerufen, um alle Beiträge oder um alle Beiträge aller gefolgten Personen zu laden.
+     * @param recyclerView Recycler View, in welchen die Beiträge geschrieben werden sollen.
+     * @param myAdapter Adapter des Recycler Views.
+     * @param activity Aktivität, von wo die Methode aufgerufen wird.
+     * @param beiträge Gibt an, ob alle Beiträge geladen werden sollen (0) oder nur die von Personen denen man folgt (1)
+     * @return Liste aller Beiträge
+     */
     public static Task<List<Beitrag>> load(RecyclerView recyclerView, MyAdapter myAdapter, Activity activity, int beiträge) {
         Task<List<Beitrag>> task;
         final TaskCompletionSource<List<Beitrag>> taskCompletionSource;
@@ -710,6 +850,10 @@ public class Java {
         return taskCompletionSource.getTask();
     }
 
+    /**
+     * Lädt alle Beiträge von Personen denen man folgt.
+     * @return Liste von Beiträgen, von Personen denen man folgt.
+     */
     public static Task<List<Beitrag>> ladeGefolgteBeiträge() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference userCollectionRef = db.collection("users");

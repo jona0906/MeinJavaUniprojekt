@@ -5,7 +5,6 @@ import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -15,8 +14,11 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.List;
 
+/**
+ * Diese Klasse zeigt ist der Hauptpart des Programmes. Sie beinhaltet unteranderem den RecyclerView, in dem alle Beiträge angezeigt werden.
+ * Von hier aus kann der Benutzer in viele andere Aktivitäten navigieren.
+ */
 public class MainActivity extends AppCompatActivity implements RecyclerViewInterface {
-
     private ImageButton ic_user;
     private ImageButton ic_newPost;
     private List<Beitrag> beitraegeListe;

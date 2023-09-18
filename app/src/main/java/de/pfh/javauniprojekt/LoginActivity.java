@@ -15,15 +15,19 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
-
+/**
+ * Diese Klasse ist für den Login des Nutzers zuständig.
+ */
 public class LoginActivity extends AppCompatActivity {
-
     private EditText email;
     private EditText password;
     private ImageButton login;
     private Button passwordLost;
     private FirebaseAuth auth;
 
+    /**
+     * Die Methode wird aufgerufen, wenn die Aktivität erstellt wird. Sie macht grundlegende Dinge und legt die On Click Listener fest.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +42,10 @@ public class LoginActivity extends AppCompatActivity {
         passwordLost.setVisibility(View.VISIBLE);
 
         passwordLost.setOnClickListener(new View.OnClickListener(){
+            /**
+             * Wenn das Passwort vergessen wurde hat der Nutzer mithilfe von diesem Knopf die Möglichkeit sich eine Mail senden zu lassen,
+             * um das Passwort zurückzusetzen.
+             */
             @Override
             public void onClick(View view) {
                 String txt_email = email.getText().toString();
@@ -60,18 +68,21 @@ public class LoginActivity extends AppCompatActivity {
                                                 Toast.makeText(LoginActivity.this, "Passwort zurückgesetzt. Überprüfen Sie Ihre E-Mails.", Toast.LENGTH_SHORT).show();
                                             } else {
                                                 Toast.makeText(LoginActivity.this, "Fehler beim Zurücksetzen des Passworts.", Toast.LENGTH_SHORT).show();
-                                                passwordLost.setText("Passwort zurücksetzen erneut versuchen");
+                                                String passwordZuruecksetzenErneut = "Passwort zurücksetzen erneut versuchen";
+                                                passwordLost.setText(passwordZuruecksetzenErneut);
                                                 passwordLost.setVisibility(View.VISIBLE);
                                             }
                                         });
                             } else {
                                 Toast.makeText(LoginActivity.this, "Diese E-Mail-Adresse ist nicht registriert.", Toast.LENGTH_SHORT).show();
-                                passwordLost.setText("Passwort zurücksetzen erneut versuchen");
+                                String passwordZuruecksetzenErneut = "Passwort zurücksetzen erneut versuchen";
+                                passwordLost.setText(passwordZuruecksetzenErneut);
                                 passwordLost.setVisibility(View.VISIBLE);
                             }
                         } else {
                             Toast.makeText(LoginActivity.this, "Fehler beim Überprüfen der E-Mail-Registrierung.", Toast.LENGTH_SHORT).show();
-                            passwordLost.setText("Erneut versuchen");
+                            String passwordZuruecksetzenErneut = "Passwort zurücksetzen erneut versuchen";
+                            passwordLost.setText(passwordZuruecksetzenErneut);
                             passwordLost.setVisibility(View.VISIBLE);
                         }
                     });
@@ -79,6 +90,10 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
         login.setOnClickListener(new View.OnClickListener() {
+            /**
+             * Diese Methode überprüft, ob Passwort und Mail vorhanden sind und gibt dann an eine Methode weiter, um den Nutzer
+             * anzumelden.
+             */
             @Override
             public void onClick(View view) {
                 String txt_email = email.getText().toString();
@@ -93,6 +108,12 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
+
+    /**
+     * Diese Methode versucht den Nutzer anzumelden.
+     * @param email Mail des Nutzers
+     * @param password Passwort des Nutzers
+     */
     public void loginUser(String email, String password)
     {
         auth.signInWithEmailAndPassword(email, password).addOnSuccessListener(new OnSuccessListener<AuthResult>() {

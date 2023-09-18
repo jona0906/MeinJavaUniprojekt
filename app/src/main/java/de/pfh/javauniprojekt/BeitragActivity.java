@@ -2,23 +2,23 @@ package de.pfh.javauniprojekt;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Die Activity "BeitragActivity" ist dafür da, weitere Details der Beiträge anzuzeigen. Dadurch sehen die Nutzer nun Kommentare
+ * und können selbst auch Kommentare zu einem Beitrag hinzufügen.
+ */
 public class BeitragActivity extends AppCompatActivity implements RecyclerViewInterface {
     private Beitrag beitrag;
     private TextView username;
@@ -37,6 +37,12 @@ public class BeitragActivity extends AppCompatActivity implements RecyclerViewIn
     private ImageView imageView;
     private Button deletePost;
 
+    /**
+     * Diese Methode startet, wenn die Aktivität gestartet wird. Sie führt die wesentlichen Schritte aus, um die Funktionen der Aktivität
+     * aufzubauen. Sie verknüpft z.B. die TextViews und Buttons mit den xml Dateien oder testet, ob Kommentare vorhanden sind, um diese
+     * anzuzeigen.
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,6 +80,10 @@ public class BeitragActivity extends AppCompatActivity implements RecyclerViewIn
             Java.ladeAlleKommentare(beitrag.getUserID(), dateObjekt, recyclerView, myAdapter, BeitragActivity.this);
 
             kommentarHinzufügen.setOnClickListener(new View.OnClickListener() {
+                /**
+                 * Die Methode wird aufgerufen, um ein Kommentar zu einem Beitrag hinzuzufügen.
+                 * @param view
+                 */
                 @Override
                 public void onClick(View view) {
                     if(kommentar.getText().toString().replace(" ", "").length() > 0)
@@ -96,6 +106,11 @@ public class BeitragActivity extends AppCompatActivity implements RecyclerViewIn
         folgeIch();
 
         followButton.setOnClickListener(new View.OnClickListener() {
+            /**
+             * Die Methode wird aufgerufen, um einer Person zu folgen. Sie wird aufgerufen, wenn auf den entsprechenden Knopf
+             * gedrückt wird.
+             * @param view
+             */
             @Override
             public void onClick(View view) {
                 Java.followUser(userID, username.getText().toString(),BeitragActivity.this);
@@ -104,6 +119,10 @@ public class BeitragActivity extends AppCompatActivity implements RecyclerViewIn
         });
 
         unfollowButton.setOnClickListener(new View.OnClickListener() {
+            /**
+             * Methode, welche auslöst, wenn ein Nutzer einem anderen Nutzer entfolgen möchte.
+             * @param view
+             */
             @Override
             public void onClick(View view) {
                 Java.followUser(userID, username.getText().toString(),BeitragActivity.this);
@@ -112,6 +131,12 @@ public class BeitragActivity extends AppCompatActivity implements RecyclerViewIn
         });
 
         deletePost.setOnClickListener(new View.OnClickListener() {
+            /**
+             * Wenn der Nutzer auf "Beitrag löschen" klickt wird diese Methode aufgerufen. Sie sorgt dafür, dass der Beitrag
+             * für alle Nutzer ausgeblendet wird. Außerdem startet sie die Main Activity, da der Beitrag, welcher gerade betrachtet wird
+             * nicht mehr existiert.
+             * @param view
+             */
             @Override
             public void onClick(View view) {
                 Java.deletePost(userID, dateObjekt, BeitragActivity.this);
@@ -121,6 +146,13 @@ public class BeitragActivity extends AppCompatActivity implements RecyclerViewIn
             }
         });
     }
+
+    /**
+     * Diese Methode wird aufgerufen, wenn auf ein Item aus dem RecyclerView geklickt wurde.
+     * Die Methode startet die Aktivität "BeitragActivity", also die gleiche, welche zum Aufruf der Methode läuft,
+     * um den Nutzer weitere Informationen zu einem Kommentar anzuzeigen, auf welchen dieser geklickt hat.
+     * @param position Position des Beitrags, auf welchen geklickt wurde.
+     */
     public void onItemClick(int position) {
         alleKommentare = Java.alleKommentare();
         Beitrag beitrag = new Beitrag(alleKommentare.get(position).getContent(), alleKommentare.get(position).getUsername(), alleKommentare.get(position).getUserID());
@@ -133,11 +165,13 @@ public class BeitragActivity extends AppCompatActivity implements RecyclerViewIn
         intent.putExtra("uid", myUID);
         intent.putExtras(bundle);
         startActivity(intent);
-
-
     }
-    private void folgeIch(){
 
+    /**
+     * Testet, ob man der Person dessen Beitrag man gerade ansieht folgt oder nicht. Je nachdem was der Fall ist wird ein anderer Knopf
+     * eingeblendet. Handelt es sich bei dem Post um den eigenen, so wird ein Knopf angezeigt, um diesen zu löschen.
+     */
+    private void folgeIch(){
         if(myUID.equals(userID))
         {
             deletePost.setVisibility(View.VISIBLE);
