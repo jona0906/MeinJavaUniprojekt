@@ -5,12 +5,21 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+/**
+ * Dieser ViewHolder zeigt den Inhalt eines Kommentares in einem RecyclerView an. Er zeigt dabei so etwas, wie den Inhalt, das Datum
+ * und den veröffentlichenden Nutzer an.
+ */
 public class MyCommentViewHolder extends RecyclerView.ViewHolder {
 
     TextView content;
     TextView date;
     TextView user;
 
+    /**
+     * Konstruktor für den ViewHolder.
+     * @param itemView Die Ansicht für den Kommentar
+     * @param recyclerViewInterface Das Interface für die RecyclerView-Interaktionen.
+     */
     public MyCommentViewHolder(@NonNull View itemView, RecyclerViewInterface recyclerViewInterface) {
         super(itemView);
         content = itemView.findViewById(R.id.content);

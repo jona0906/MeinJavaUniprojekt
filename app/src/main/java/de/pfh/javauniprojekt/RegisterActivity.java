@@ -10,6 +10,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 
+/**
+ * Möchte ein Nutzer einen neuen Account anlegen, so startet diese Aktivität.
+ * Sie zeigt das entsprechende Layout an, testet ob die Informationen vollständig eingegeben wurden und führt letzendlich Methoden aus,
+ * um den Nutzer im System anzulegen.
+ */
 public class RegisterActivity extends AppCompatActivity {
 
     private EditText email;
@@ -18,6 +23,11 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText username;
     private FirebaseAuth auth;
 
+    /**
+     * Beim starten des Programmes werden Variablen mit der Aktivität verknüpft. Zudem werden standartmäßige Einstellungen getätigt und
+     * es werden OnClickListener gesetzt, um zu überwachen auf welche Knöpfe der User drückt.
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,6 +42,10 @@ public class RegisterActivity extends AppCompatActivity {
         username = findViewById(R.id.username);
 
         register.setOnClickListener(new View.OnClickListener() {
+            /**
+             * Hier wird überprüft, ob die eingegebenen Daten vollständig sind. Ist dies der Fall werden Methoden aufgerufen, um den Nutzer
+             * anzulegen. Zudem testen diese Methoden, ob es bereits einen Nutzer mit dem Nutzernamen gibt.
+             */
             @Override
             public void onClick(View view) {
                 String txt_email = email.getText().toString();

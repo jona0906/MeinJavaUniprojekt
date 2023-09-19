@@ -16,11 +16,19 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.Objects;
 
+/**
+ * Diese Aktivität dient dazu dem Benutzer Information darüber zu geben, mit welchem Account und welcher Mail Adresse
+ * er gerade angemeldet ist. Zudem hat er hier die Möglichkeit sich aus seinem Account abzumelden.
+ */
 public class UserProfileActivity extends AppCompatActivity {
 
     private Button logout;
     private String username;
 
+    /**
+     * Es werden Daten geladen, um diese dem User anzuzeigen, wie z.B. die Mail Adresse oder den eigenen Nutzernamen.
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +50,9 @@ public class UserProfileActivity extends AppCompatActivity {
         nutzer.setText(angemeldetAls);
         textViewUsername.setText(username);
         logout.setOnClickListener(new View.OnClickListener() {
+            /**
+             * Der User wird abgemeldet.
+             */
             @Override
             public void onClick(View view) {
                 FirebaseAuth.getInstance().signOut();

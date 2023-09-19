@@ -13,6 +13,10 @@ import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
+/**
+ * Diese Aktivität wird aufgerufen, sobald ein neuer Beitrag hinzugefügt werden soll. Sie zeigt entsprechende Textfelder an
+ * und sorgt dafür, dass die richtigen Methoden aufgerufen werden, um den Beitrag in Firebase zu speichern.
+ */
 public class NewPostActivity extends AppCompatActivity {
 
     private Button post_button;
@@ -26,6 +30,10 @@ public class NewPostActivity extends AppCompatActivity {
     private ImageView newStatement;
     private ImageView newStory;
 
+    /**
+     * Methode, welche aufgerufen wird, wenn die Aktivität gestartet wird. Sie weißt die Variablen der Aktivität zu und setzt
+     * grundlegende Dinge fest.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +54,9 @@ public class NewPostActivity extends AppCompatActivity {
 
         switchOff();
 
+        /**
+         * Wenn dieser Button geklickt wird, so wird ein neuer Post hochgeladen.
+         */
         post_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -56,6 +67,10 @@ public class NewPostActivity extends AppCompatActivity {
             }
         });
 
+        /**
+         * Wird der Schalter, bei dem man zwischen Statement und Story switchen kann umgelegt, so wird diese Methode aufgerufen
+         * und aktualisiert ein paar Dinge.
+         */
         statementStorySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -68,6 +83,9 @@ public class NewPostActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Der Schalter ist aus. Es handelt sich bei dem neuen Beitrag um ein Statement. (Ein besonders kurzer Text.)
+     */
     private void switchOff() {
         textViewStory.setTypeface(null, Typeface.NORMAL);
         textViewStatement.setTypeface(null, Typeface.BOLD);
@@ -81,6 +99,9 @@ public class NewPostActivity extends AppCompatActivity {
         statement = true;
     }
 
+    /**
+     * Der Schalter ist an, es handlet sich bei dem neuen Beitrag um eine Story. (Kaum eine Zeichenbegrenzung beim neuen Post.)
+     */
     private void switchOn() {
         textViewStory.setTypeface(null, Typeface.BOLD);
         textViewStatement.setTypeface(null, Typeface.NORMAL);
@@ -93,6 +114,10 @@ public class NewPostActivity extends AppCompatActivity {
         statement = false;
     }
 
+    /**
+     * Methode, welche aufgerufen wird, wenn der zurück Knopf gedrpckt wird.
+     * Die Methode startet wieder die MainActivity.
+     */
     @Override
     public void onBackPressed() {
         Intent intent = new Intent(NewPostActivity.this, MainActivity.class);
