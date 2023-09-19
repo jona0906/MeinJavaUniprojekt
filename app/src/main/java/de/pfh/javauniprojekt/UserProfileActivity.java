@@ -27,7 +27,6 @@ public class UserProfileActivity extends AppCompatActivity {
 
     /**
      * Es werden Daten geladen, um diese dem User anzuzeigen, wie z.B. die Mail Adresse oder den eigenen Nutzernamen.
-     * @param savedInstanceState
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -27,6 +27,9 @@ public class MyCommentViewHolder extends RecyclerView.ViewHolder {
         user = itemView.findViewById(R.id.user);
 
         itemView.setOnClickListener(new View.OnClickListener() {
+            /**
+             * Ruft die Position ab, auf welches Item geklickt wurde und startet damit neue Methoden.
+             */
             @Override
             public void onClick(View view) {
                 if (recyclerViewInterface != null){

@@ -30,6 +30,9 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewInter
     private ImageButton allPosts;
     private String userId;
 
+    /**
+     * Beim starten werden die Variablen verknüpft und der RecyclerView mit allen Beiträgen wird geladen.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +59,9 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewInter
         Task<List<Beitrag>> loadDataTask = Java.load(recyclerView, myAdapter, MainActivity.this, 0);
 
         loadDataTask.addOnCompleteListener(new OnCompleteListener<List<Beitrag>>() {
+            /**
+             * Die Liste "beitraegeListe" wird auf die Daten von Firebase gesetzt.
+             */
             @Override
             public void onComplete(Task<List<Beitrag>> task) {
                 if (task.isSuccessful()) {
@@ -65,17 +71,22 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewInter
         });
 
         ic_user.setOnClickListener(new View.OnClickListener() {
+            /**
+             * Die Nutzerdetails werden in einer neune Aktivität angezeigt.
+             */
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, UserProfileActivity.class);
                 intent.putExtra("username", myUsername);
                 startActivity(intent);
                 overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-
             }
         });
 
         ic_newPost.setOnClickListener(new View.OnClickListener() {
+            /**
+             * Neuer Post wird erstellt, weswegen eine entsprechende Aktivität aufgerufen wird.
+             */
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, NewPostActivity.class);
@@ -99,6 +110,9 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewInter
         });
 
         allPosts.setOnClickListener(new View.OnClickListener() {
+            /**
+             * Filtert die Posts so, dass alle Posts angezeigt werden.
+             */
             @Override
             public void onClick(View view) {
                 Task<List<Beitrag>> loadDataTask = Java.load(recyclerView, myAdapter, MainActivity.this, 0);
@@ -115,6 +129,9 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewInter
         });
 
         followedPosts.setOnClickListener(new View.OnClickListener() {
+            /**
+             * Filtert die Posts so, dass nur diejenigen angezeigt werden von den Leuten denen man folgt.
+             */
             @Override
             public void onClick(View view) {
                 Task<List<Beitrag>> loadDataTask = Java.load(recyclerView, myAdapter, MainActivity.this, 1);
@@ -130,14 +147,26 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewInter
         });
     }
 
+    /**
+     * Setzt den eigenen Nutzernamen fest.
+     * @param username Eigener Nutzername.
+     */
     private void myUsername(String username) {
         myUsername = username;
     }
 
+    /**
+     * Verhindert, dass man durch das drücken auf den zurück Knopf die Anwendung verlässt.
+     */
     @Override
     public void onBackPressed() { //Ich habe diese Methode eingebaut, damit man nicht zurück navigieren kann.
     }
 
+    /**
+     * Wenn ein Item aus dem RecyclerView mit den Beiträgen angeklickt wird, dann ruft diese Methode eine neue
+     * Aktivität auf, wo man mehr Details zu dem Beitrag einsehen kann, sowie kommentierne kann.
+     * @param position Position des Beitrages, auf welchen geklickt wird.
+     */
     public void onItemClick(int position) {
         List<Beitrag> items = MyAdapter.getItems();
         Beitrag beitrag = new Beitrag(items.get(position).getContent(), items.get(position).getUsername(), items.get(position).getUserID());

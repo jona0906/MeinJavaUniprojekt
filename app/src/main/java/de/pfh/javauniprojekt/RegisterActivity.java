@@ -26,7 +26,6 @@ public class RegisterActivity extends AppCompatActivity {
     /**
      * Beim starten des Programmes werden Variablen mit der Aktivität verknüpft. Zudem werden standartmäßige Einstellungen getätigt und
      * es werden OnClickListener gesetzt, um zu überwachen auf welche Knöpfe der User drückt.
-     * @param savedInstanceState
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {

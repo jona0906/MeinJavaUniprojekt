@@ -70,7 +70,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
 
     /**
      * Die Methode aktualisiert die Liste und teilt dies dem RecyclerView mit.
-     * @param filteredList
+     * @param filteredList Liste, auf welche der RecyclerView aktualisiert werden soll.
      */
     public void setFilteredList(List<Beitrag> filteredList)
     {

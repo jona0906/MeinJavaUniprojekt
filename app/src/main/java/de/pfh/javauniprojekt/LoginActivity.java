@@ -111,8 +111,8 @@ public class LoginActivity extends AppCompatActivity {
 
     /**
      * Diese Methode versucht den Nutzer anzumelden.
-     * @param email Mail des Nutzers
-     * @param password Passwort des Nutzers
+     * @param email Mail des Nutzers.
+     * @param password Passwort des Nutzers.
      */
     public void loginUser(String email, String password)
     {

@@ -54,10 +54,10 @@ public class NewPostActivity extends AppCompatActivity {
 
         switchOff();
 
-        /**
-         * Wenn dieser Button geklickt wird, so wird ein neuer Post hochgeladen.
-         */
         post_button.setOnClickListener(new View.OnClickListener() {
+            /**
+             * Wenn dieser Button geklickt wird, so wird ein neuer Post hochgeladen.
+             */
             @Override
             public void onClick(View view) {
                 Java.addPost(NewPostActivity.this, newPost.getText().toString(), username, uid, statement);

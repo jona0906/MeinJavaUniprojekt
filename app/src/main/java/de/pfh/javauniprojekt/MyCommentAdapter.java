@@ -23,10 +23,10 @@ public class MyCommentAdapter extends RecyclerView.Adapter<MyCommentViewHolder> 
 
     /**
      * Konstruktor für einen neuen Adapter.
-     * @param context
-     * @param recyclerViewInterface
-     * @param recyclerView
-     * @param activity
+     * @param context Der Kontext der Aufrufenden Activity oder Anwendung.
+     * @param recyclerViewInterface Das Interface für die RecyclerView-Ereignisse.
+     * @param recyclerView Der RecyclerView, der von diesem Adapter verwaltet wird.
+     * @param activity Die Aktivität, welche das Objekt erstellt.
      */
     public MyCommentAdapter(Context context, RecyclerViewInterface recyclerViewInterface, RecyclerView recyclerView, Activity activity) {
         this.context = context;
@@ -74,7 +74,7 @@ public class MyCommentAdapter extends RecyclerView.Adapter<MyCommentViewHolder> 
 
     /**
      * Methode zum setzen der Liste mit Kommentaren.
-     * @param filteredList
+     * @param filteredList Liste, auf welche der RecyclerView aktualisiert werden soll.
      */
     public void setItemList(List<Beitrag> filteredList)
     {

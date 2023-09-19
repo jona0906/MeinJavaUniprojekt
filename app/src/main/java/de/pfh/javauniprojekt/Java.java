@@ -389,7 +389,6 @@ public class Java {
      * @param position Position des Beitrages in der Liste.
      * @param aUserID Nutzer-ID, der Person, welche den Beitrag veröffentlicht hat.
      * @param aDate Datum der Veröffentlichung.
-     * @return
      */
     public static Task<Void> addLike(int position, String aUserID, Date aDate) {
         TaskCompletionSource<Void> taskCompletionSource = new TaskCompletionSource<>();
@@ -790,7 +789,7 @@ public class Java {
     /**
      * Diese Methode wandelt das Datum eines Beitrages so ab, dass sofern der Beitrag erst vor einer gewissen Zeit hochgeladen wurde,
      * ein String zurückgegeben wird, in welchem steht "Vor x Minuten hochgeladen.
-     * @param date
+     * @param date Datum, welche umgewandelt werden soll, um ein schöneres Format anzuzeigen.
      * @return String Wert mit passender Formatierung.
      */
     public static String dateCheck(Date date) {

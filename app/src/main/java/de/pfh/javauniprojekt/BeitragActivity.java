@@ -41,7 +41,6 @@ public class BeitragActivity extends AppCompatActivity implements RecyclerViewIn
      * Diese Methode startet, wenn die Aktivität gestartet wird. Sie führt die wesentlichen Schritte aus, um die Funktionen der Aktivität
      * aufzubauen. Sie verknüpft z.B. die TextViews und Buttons mit den xml Dateien oder testet, ob Kommentare vorhanden sind, um diese
      * anzuzeigen.
-     * @param savedInstanceState
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,7 +81,6 @@ public class BeitragActivity extends AppCompatActivity implements RecyclerViewIn
             kommentarHinzufügen.setOnClickListener(new View.OnClickListener() {
                 /**
                  * Die Methode wird aufgerufen, um ein Kommentar zu einem Beitrag hinzuzufügen.
-                 * @param view
                  */
                 @Override
                 public void onClick(View view) {
@@ -109,7 +107,6 @@ public class BeitragActivity extends AppCompatActivity implements RecyclerViewIn
             /**
              * Die Methode wird aufgerufen, um einer Person zu folgen. Sie wird aufgerufen, wenn auf den entsprechenden Knopf
              * gedrückt wird.
-             * @param view
              */
             @Override
             public void onClick(View view) {
@@ -121,7 +118,6 @@ public class BeitragActivity extends AppCompatActivity implements RecyclerViewIn
         unfollowButton.setOnClickListener(new View.OnClickListener() {
             /**
              * Methode, welche auslöst, wenn ein Nutzer einem anderen Nutzer entfolgen möchte.
-             * @param view
              */
             @Override
             public void onClick(View view) {
@@ -135,7 +131,6 @@ public class BeitragActivity extends AppCompatActivity implements RecyclerViewIn
              * Wenn der Nutzer auf "Beitrag löschen" klickt wird diese Methode aufgerufen. Sie sorgt dafür, dass der Beitrag
              * für alle Nutzer ausgeblendet wird. Außerdem startet sie die Main Activity, da der Beitrag, welcher gerade betrachtet wird
              * nicht mehr existiert.
-             * @param view
              */
             @Override
             public void onClick(View view) {
