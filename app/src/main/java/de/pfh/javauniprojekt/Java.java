@@ -1,8 +1,10 @@
 package de.pfh.javauniprojekt;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
-
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -886,5 +888,18 @@ public class Java {
                     }
                     return alleBeitraegeListe;
                 });
+    }
+
+    /**
+     * Diese Methode prüft, ob das Gerät mit dem Internet verbunden ist und gibt dementsprechen wahr oder falsch zurück.
+     * @return wahr oder falsch, je nachdem ob das Gerät mit dem Internet verbunden ist oder nicht.
+     */
+    public static boolean isNetworkAvailable(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager != null) {
+            NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+            return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+        }
+        return false;
     }
 }

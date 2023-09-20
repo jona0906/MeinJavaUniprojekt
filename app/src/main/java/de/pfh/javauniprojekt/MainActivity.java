@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -45,6 +46,11 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewInter
         followedPosts = findViewById(R.id.followedPosts);
         allPosts = findViewById(R.id.allPosts);
         searchView.clearFocus();
+
+        if (!Java.isNetworkAvailable(this)) {
+            Toast.makeText(MainActivity.this, "Bitte stelle eine Internetverbindung her.", Toast.LENGTH_LONG).show();
+        }
+
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         assert currentUser != null;
         userId = currentUser.getUid();
