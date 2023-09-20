@@ -2,6 +2,7 @@ package de.pfh.javauniprojekt;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.InputFilter;
@@ -51,7 +52,6 @@ public class NewPostActivity extends AppCompatActivity {
         textViewStory = findViewById(R.id.textViewStory);
         newStatement = findViewById(R.id.imageViewStatement);
         newStory = findViewById(R.id.imageViewStory);
-
         switchOff();
 
         post_button.setOnClickListener(new View.OnClickListener() {
